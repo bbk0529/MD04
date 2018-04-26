@@ -1,3 +1,6 @@
+#https://stackoverflow.com/questions/11869910/pandas-filter-rows-of-dataframe-with-operator-chaining
+import pandas as pd
+
 def fileRead(filename) :
     items=[]
     item=[]
@@ -27,12 +30,20 @@ def parsingDoc(document) :
     leadtime=document[11].split()[4];
 
     meta=[partnr,description, MRP, MatlType, PurGrp, leadtime]
-    header=["Partnr", "Date","MRPElement","Rec/reqd Qty","AvailQty"]
+    header=["Partnr", "Date","Type","DocNum","Pos","Change","Avail"]
     data=[]
 
-    for line in document[22:len(document)-3] :
+    for line in document[22:-3] :
         cursor=line.split("|")
         #print("CURSOR :",  cursor[7], cursor[8], len(cursor[7].strip()), len(cursor[8].strip()))
+        try :
+            
+            docNum=cursor[4].strip().split("/")[0]
+            pos=cursor[4].strip().split("/")[1]
+        
+        except Exception as e:
+            docNum=0
+            pos=0
         try  :           
 
             if int(cursor[7][-1] == "-") :                      
@@ -46,11 +57,8 @@ def parsingDoc(document) :
             #print(e)
             
         try : 
-            
-        
             if int(cursor[8][-1] == "-") :      
                 avail=(-int(float((cursor[8][0:-1].strip()))))                
-                
             else:
                 avail=((int(float(cursor[8].strip()))))                
                 
@@ -58,8 +66,19 @@ def parsingDoc(document) :
             avail=0
             #print(cursor[7], cursor[8], "Exception occured")  
             #print(e)
-        datum = [partnr, cursor[2].strip(), cursor[3].strip(), qty, avail]
+        datum = [partnr, cursor[2].strip(), cursor[3].strip(), docNum, pos, qty, avail]
+        print(datum)
         data.append(datum)
+    
+    
+#     df=pd.DataFrame(data, columns=header) 
+#     df.pos=pd.to_numeric(df.pos)
+#     df.docNum=pd.to_numeric(df.docNum)
 
     md04={"meta":meta, "header": header, "data":data}
     return md04
+
+#filter using chain method 
+def mask(df, key, value):
+    return df[df[key] == value]
+pd.DataFrame.mask = mask
