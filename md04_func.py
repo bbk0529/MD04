@@ -16,8 +16,8 @@ def fileRead(filename) :
 
 def parsingDoc(document) :
     #line 6 for material # and material description
-    partnr=document[5].split("               ")[1].strip() ; 
-    description=document[5].split("               ")[2].strip();
+    partnr=document[5].split("             ")[1].strip() ; 
+    description=document[5].split("             ")[2].strip();
 
     #line9 MRP type / Matl Type
     MRP=document[8].split()[3];
